@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    --color-primary: #0077c8;
+    --color-primary-dark: #00558f;
+    --color-deep: #063c63;
+    --color-ink: #152238;
+    --color-success: #00a651;
+    --color-danger: #e60012;
+    --color-decorative: #ffd200;
+    --color-app: #f4f7fa;
+    --color-background-app: #f4f7fa;
+}
+
+@layer base {
+    html { background: var(--color-background-app); }
+    body { min-width: 320px; overflow-x: clip; background: var(--color-background-app); color: var(--color-ink); font-family: var(--font-sans); text-rendering: optimizeLegibility; }
+    ::selection { background: var(--color-primary-dark); color: #fff; }
+    :focus-visible { outline: 3px solid var(--color-decorative); outline-offset: 3px; transition: none; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+}
+
+@layer components {
+    .public-portal { --public-paper: #f3f6f4; --public-cream: #fffdf6; --public-blue: #0077c8; --public-blue-deep: #00558f; --public-blue-950: #063c63; --public-green: #00a651; --public-yellow: #ffd200; --public-ink: #14283b; --public-body: #5d6d78; background: var(--public-paper); color: var(--public-ink); font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif; font-size: 1rem; letter-spacing: -0.012em; -webkit-font-smoothing: antialiased; }
+    .public-display { font-family: 'Lora', Georgia, serif; font-weight: 500; letter-spacing: -0.04em; line-height: 1.08; text-wrap: balance; }
+    .public-page-hero { background: linear-gradient(135deg, var(--public-blue-deep) 0%, var(--public-blue-950) 76%, #073653 100%); }
+    .home-hero { background: linear-gradient(135deg, var(--public-blue-deep) 0%, var(--public-blue-950) 72%, #073653 100%); }
+    .home-hero-pattern::before { content: ''; position: absolute; top: 7rem; right: -8rem; width: 30rem; height: 30rem; border: 1px solid rgb(255 210 0 / 16%); border-radius: 999px; box-shadow: 0 0 0 3.5rem rgb(255 210 0 / 4%), 0 0 0 7rem rgb(255 210 0 / 2.5%); }
+    .home-hero-pattern::after { content: ''; position: absolute; top: 10rem; left: 4%; width: 6.5rem; height: 6.5rem; opacity: .18; background-image: radial-gradient(var(--public-yellow) 1.2px, transparent 1.2px); background-size: 12px 12px; }
+    .skip-link { position: fixed; left: 1rem; top: .75rem; z-index: 60; transform: translateY(-5rem); background: var(--color-ink); padding: .75rem 1rem; color: #fff; font-weight: 600; transition: transform .2s ease; }
+    .skip-link:focus { transform: translateY(0); }
+    .spmb-container { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+    .spmb-button { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition duration-200 disabled:cursor-not-allowed disabled:opacity-50; }
+    .spmb-button-primary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-sm shadow-blue-950/15 transition duration-200 hover:-translate-y-0.5 hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-50; }
+    .spmb-button-secondary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition duration-200 hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50; }
+    .spmb-button-danger { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-danger px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50; }
+    .spmb-input { @apply block min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm outline-none placeholder:text-slate-400 transition focus:border-primary focus:ring-4 focus:ring-blue-50 disabled:cursor-not-allowed disabled:bg-slate-100; }
+    .spmb-label { @apply mb-1.5 block text-sm font-bold text-slate-700; }
+    .spmb-help { @apply mt-1.5 text-xs leading-5 text-slate-500; }
+    .spmb-error { @apply mt-1.5 text-xs font-medium text-red-700; }
+    .spmb-panel { @apply rounded-2xl border border-slate-200 bg-white; }
+    .spmb-badge { @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold; }
+    .spmb-table { @apply min-w-full text-left text-sm; }
+    .spmb-table th { @apply border-b border-slate-200 px-4 py-3 text-xs font-bold uppercase tracking-wide text-slate-500; }
+    .spmb-table td { @apply border-b border-slate-100 px-4 py-3.5 align-middle text-slate-700; }
+
+    .admin-portal { --admin-page: #f4f7fa; --admin-surface: #fff; --admin-line: #dbe4ec; --admin-line-soft: #e8eef3; --admin-muted: #607285; --admin-heading: #152238; --admin-primary: #0077c8; --admin-primary-dark: #00558f; background: var(--admin-page); color: var(--admin-heading); font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif; font-size: .9375rem; letter-spacing: -.01em; }
+    .admin-page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; }
+    .admin-page-title { color: var(--admin-heading); font-size: clamp(1.65rem, 2.5vw, 2.15rem); font-weight: 700; letter-spacing: -.035em; line-height: 1.15; }
+    .admin-page-description { max-width: 48rem; margin-top: .45rem; color: var(--admin-muted); font-size: .9375rem; line-height: 1.55; }
+    .admin-nav-link { border-radius: .75rem; min-height: 2.75rem; }
+    .spmb-button-primary:disabled { background: #dbe7f1 !important; color: #7890a6 !important; box-shadow: none !important; opacity: 1 !important; }
+    .public-portal footer > .spmb-container:first-child { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+}

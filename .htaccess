@@ -1,0 +1,16 @@
+# Hostinger Laravel virtual document root for SPMB subfolder
+Options -Indexes -MultiViews
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteCond %{REQUEST_METHOD} =TRACE [NC]
+    RewriteRule ^ - [R=405,L]
+
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+<FilesMatch "(?i)(^\.env|composer\.(json|lock)|package(-lock)?\.json|artisan|phpunit\.xml|vite\.config\.(js|ts)|.*\.(sqlite|sqlite3|sql|bak|old|save))$">
+    Require all denied
+</FilesMatch>

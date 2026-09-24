@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /daftar
+Disallow: /cek-status
+Disallow: /pendaftaran/
+Disallow: /admin/
+Disallow: /login
+Disallow: /lupa-password
+Disallow: /reset-password/
+Disallow: /auth/
+
+Sitemap: https://spmb.lenterahatiibs.com/sitemap.xml
