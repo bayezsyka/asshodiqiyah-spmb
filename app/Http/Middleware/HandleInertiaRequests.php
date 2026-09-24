@@ -41,14 +41,13 @@ class HandleInertiaRequests extends Middleware
                 'name' => $request->user()->name,
                 'username' => $request->user()->username,
                 'role' => $request->user()->peran?->value,
+                'unitPendidikan' => $request->user()->unitPendidikan?->only(['id', 'nama']),
             ] : null],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
-            'mainSiteUrl' => env('MAIN_SITE_URL', 'https://lenterahatiibs.com'),
-            'spmbInfoUrl' => env('MAIN_SITE_URL', 'https://lenterahatiibs.com') . '/spmb',
-            'ppdbInfoUrl' => env('MAIN_SITE_URL', 'https://lenterahatiibs.com') . '/spmb',
+            'mainSiteUrl' => env('MAIN_SITE_URL', config('app.url')),
             'seo' => $this->metadataSeo($request),
         ];
     }
@@ -59,24 +58,24 @@ class HandleInertiaRequests extends Middleware
     private function metadataSeo(Request $request): array
     {
         $urlAplikasi = rtrim((string) config('app.url'), '/');
-        $urlSitusUtama = rtrim((string) env('MAIN_SITE_URL', 'https://lenterahatiibs.com'), '/');
+        $urlSitusUtama = rtrim((string) env('MAIN_SITE_URL', config('app.url')), '/');
         $beranda = $this->halamanBolehDiindeks($request);
 
         if (! $beranda) {
             return [
-                'title' => 'Portal SPMB Lenterahati IBS',
-                'description' => 'Portal resmi SPMB Lenterahati Islamic Boarding School.',
+                'title' => 'Portal SPMB Asshodiqiyah',
+                'description' => 'Portal resmi penerimaan santri dan siswa baru Pondok Pesantren Asshodiqiyah Kaligawe.',
                 'canonical' => $urlAplikasi.'/'.$request->path(),
                 'robots' => 'noindex, nofollow, noarchive, nosnippet',
             ];
         }
 
         return [
-            'title' => 'SPMB Lenterahati IBS | Pendaftaran Santri Baru',
-            'description' => 'Portal resmi Seleksi Penerimaan Murid Baru Lenterahati Islamic Boarding School untuk memilih jenjang, mengirim pendaftaran, dan memperoleh informasi dari panitia.',
+            'title' => 'SPMB Asshodiqiyah | Pendaftaran Santri dan Siswa Baru',
+            'description' => 'Portal resmi penerimaan santri dan siswa baru Pondok Pesantren Asshodiqiyah Kaligawe untuk SD IT, SMP IT, MTs, MA, dan SMK.',
             'canonical' => $urlAplikasi.'/',
             'robots' => 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
-            'ogImage' => $urlAplikasi.'/assets/lentera-hati/campus.webp',
+            'ogImage' => $urlAplikasi.'/assets/asshodiqiyah/hero-landing.png',
             'jsonLd' => [
                 '@context' => 'https://schema.org',
                 '@graph' => [
@@ -84,16 +83,16 @@ class HandleInertiaRequests extends Middleware
                         '@type' => 'WebSite',
                         '@id' => $urlAplikasi.'/#website',
                         'url' => $urlAplikasi.'/',
-                        'name' => 'Portal SPMB Lenterahati IBS',
+                        'name' => 'Portal SPMB Asshodiqiyah',
                         'inLanguage' => 'id-ID',
                     ],
                     [
                         '@type' => 'EducationalOrganization',
                         '@id' => $urlSitusUtama.'/#organization',
-                        'name' => 'Lenterahati Islamic Boarding School',
+                        'name' => 'Pondok Pesantren Asshodiqiyah Kaligawe',
                         'url' => $urlSitusUtama.'/',
-                        'logo' => $urlAplikasi.'/assets/lentera-hati/logo-sekolah-lenterahati.png',
-                        'areaServed' => 'Lombok Barat, Nusa Tenggara Barat, Indonesia',
+                        'logo' => $urlAplikasi.'/assets/asshodiqiyah/logo.webp',
+                        'areaServed' => 'Kaligawe, Kota Semarang, Jawa Tengah, Indonesia',
                     ],
                 ],
             ],

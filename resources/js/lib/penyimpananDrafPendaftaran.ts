@@ -1,5 +1,5 @@
 const KUNCI_DRAF = 'spmb.pendaftaran.draf.v1';
-const NAMA_DATABASE = 'spmb-lenterahati';
+const NAMA_DATABASE = 'spmb-asshodiqiyah';
 const NAMA_STORE = 'berkas-draf-pendaftaran';
 const MASA_BERLAKU_MS = 24 * 60 * 60 * 1000;
 

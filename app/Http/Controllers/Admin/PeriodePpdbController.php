@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\PeriodePpdb;
 use App\Models\Pendaftaran;
+use App\Models\PeriodePpdb;
 use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,8 +13,9 @@ use Inertia\Response;
 
 class PeriodePpdbController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $this->pastikanSuperadmin($request);
         $periode = PeriodePpdb::query()
             ->withCount('pendaftaran')
             ->orderByDesc('status_aktif')
@@ -62,6 +63,7 @@ class PeriodePpdbController extends Controller
 
     public function store(Request $request, AuditLogger $audit): RedirectResponse
     {
+        $this->pastikanSuperadmin($request);
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
             'tahun_ajaran' => ['required', 'string', 'max:20'],
@@ -84,6 +86,7 @@ class PeriodePpdbController extends Controller
 
     public function update(Request $request, PeriodePpdb $periode, AuditLogger $audit): RedirectResponse
     {
+        $this->pastikanSuperadmin($request);
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
             'tahun_ajaran' => ['required', 'string', 'max:20'],
@@ -106,6 +109,7 @@ class PeriodePpdbController extends Controller
 
     public function aktifkan(Request $request, PeriodePpdb $periode, AuditLogger $audit): RedirectResponse
     {
+        $this->pastikanSuperadmin($request);
         PeriodePpdb::where('id', '!=', $periode->id)->update(['status_aktif' => false]);
         $periode->update(['status_aktif' => true]);
 
@@ -116,6 +120,7 @@ class PeriodePpdbController extends Controller
 
     public function destroy(Request $request, PeriodePpdb $periode, AuditLogger $audit): RedirectResponse
     {
+        $this->pastikanSuperadmin($request);
         if ($periode->pendaftaran()->exists()) {
             return back()->with('error', 'Periode tidak dapat dihapus karena sudah terdapat pendaftar yang terdaftar di periode ini.');
         }
@@ -130,5 +135,10 @@ class PeriodePpdbController extends Controller
         $audit->record('periode.deleted', null, ['tahun_ajaran' => $tahunAjaran], $request);
 
         return back()->with('success', "Periode {$tahunAjaran} berhasil dihapus.");
+    }
+
+    private function pastikanSuperadmin(Request $request): void
+    {
+        abort_unless($request->user()?->isSuperadmin(), 403);
     }
 }

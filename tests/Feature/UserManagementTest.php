@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\PeranUser;
+use App\Models\UnitPendidikan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -35,6 +36,7 @@ class UserManagementTest extends TestCase
     public function test_superadmin_can_create_admin_spmb(): void
     {
         $superadmin = $this->user(PeranUser::Superadmin);
+        $unit = UnitPendidikan::create(['kode' => 'MTS', 'nama' => 'MTs Asshodiqiyah', 'urutan' => 1]);
 
         $this->actingAs($superadmin)->post('/admin/users', [
             'name' => 'Panitia Baru',
@@ -43,6 +45,7 @@ class UserManagementTest extends TestCase
             'password' => 'rahasia123',
             'password_confirmation' => 'rahasia123',
             'peran' => PeranUser::AdminSpmb->value,
+            'unit_pendidikan_id' => $unit->id,
         ])->assertRedirect();
 
         $user = User::where('username', 'panitia.baru')->firstOrFail();
@@ -80,10 +83,16 @@ class UserManagementTest extends TestCase
 
     private function user(PeranUser $peran): User
     {
-        return User::factory()->create([
+        $atribut = [
             'username' => fake()->unique()->userName(),
             'peran' => $peran,
             'status_aktif' => true,
-        ]);
+        ];
+
+        if ($peran === PeranUser::AdminSpmb) {
+            $atribut['unit_pendidikan_id'] = UnitPendidikan::create(['kode' => fake()->unique()->lexify('U????'), 'nama' => 'Unit Uji', 'urutan' => 1])->id;
+        }
+
+        return User::factory()->create($atribut);
     }
 }

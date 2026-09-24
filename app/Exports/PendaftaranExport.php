@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Pendaftaran;
+use App\Models\User;
 use Illuminate\Support\Enumerable;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -10,11 +11,12 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 class PendaftaranExport implements FromCollection, WithHeadings
 {
     /** @param array<string, mixed> $filter */
-    public function __construct(private readonly array $filter = []) {}
+    public function __construct(private readonly array $filter = [], private readonly ?User $pengelola = null) {}
 
     public function collection(): Enumerable
     {
         return Pendaftaran::query()
+            ->when($this->pengelola, fn ($query, User $user) => $query->untukPengelola($user))
             ->with(['jenjang', 'periode'])
             ->when($this->filter['status'] ?? null, fn ($query, $value) => $query->where('status', $value))
             ->when($this->filter['jenjang'] ?? null, fn ($query, $value) => $query->where('jenjang_pendaftaran_id', $value))
@@ -29,7 +31,7 @@ class PendaftaranExport implements FromCollection, WithHeadings
             ->get()
             ->map(fn (Pendaftaran $pendaftaran) => array_map($this->nilaiAman(...), [
                 $pendaftaran->nama_lengkap, $pendaftaran->nisn, $pendaftaran->nik, $pendaftaran->nama_panggilan, $pendaftaran->jenjang->nama,
-                $pendaftaran->periode?->tahun_ajaran ?? ($pendaftaran->jenjang->kelompok === 'paud' ? 'PAUD (Sepanjang Tahun)' : 'Tanpa Periode'), $pendaftaran->status->label(),
+                $pendaftaran->periode?->tahun_ajaran ?? 'Tanpa Periode', $pendaftaran->status->label(),
                 $pendaftaran->tempat_lahir, $pendaftaran->tanggal_lahir?->format('d/m/Y'), $pendaftaran->jenis_kelamin, $pendaftaran->agama_calon,
                 $pendaftaran->suku_bangsa_calon, $pendaftaran->kewarganegaraan, $pendaftaran->alamat_domisili, $pendaftaran->nomor_telepon_calon,
                 $pendaftaran->tinggal_bersama, $pendaftaran->asal_sekolah, $pendaftaran->alamat_sekolah_asal, $pendaftaran->nama_ayah,

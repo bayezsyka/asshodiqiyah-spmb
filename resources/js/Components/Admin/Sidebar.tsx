@@ -95,7 +95,7 @@ export default function Sidebar({
               </div>
               <div className="min-w-0 flex flex-col">
                 <span className="truncate text-sm font-extrabold leading-tight text-ink">
-                  Lenterahati IBS
+                  Asshodiqiyah
                 </span>
                 <span className="text-[10px] font-semibold text-slate-500">
                   Panel SPMB
@@ -206,7 +206,7 @@ export default function Sidebar({
           {/* Profil Pengguna */}
           <Link
             href="/admin/profil"
-            className="group flex h-11 items-center rounded-xl border border-slate-200 bg-white px-3 transition hover:border-primary/50 hover:bg-blue-50/30"
+            className="group flex h-11 items-center rounded-xl border border-slate-200 bg-white px-3 transition hover:border-primary/50 hover:bg-[#e7efe8]"
             title={visuallyCollapsed ? user?.name || 'Profil Akun' : undefined}
           >
             <div
@@ -218,10 +218,10 @@ export default function Sidebar({
               )}
             >
               <span className="text-xs font-bold leading-tight truncate text-ink">
-                {user?.name || 'Admin Lentera Hati'}
+                {user?.name || 'Admin Asshodiqiyah'}
               </span>
               <span className="text-[10px] text-slate-500 leading-tight truncate">
-                {user?.email || 'admin@spmb.lenterahatiibs.com'}
+                {user?.email || 'admin@asshodiqiyah.local'}
               </span>
             </div>
           </Link>

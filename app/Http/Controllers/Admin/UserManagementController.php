@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\PeranUser;
 use App\Http\Controllers\Controller;
+use App\Models\UnitPendidikan;
 use App\Models\User;
 use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
@@ -25,7 +26,7 @@ class UserManagementController extends Controller
             'peran' => ['nullable', Rule::enum(PeranUser::class)],
         ]);
 
-        $users = User::query()
+        $users = User::query()->with('unitPendidikan:id,nama')
             ->when($filters['search'] ?? null, function ($query, string $search): void {
                 $query->where(function ($query) use ($search): void {
                     $query->where('name', 'like', "%{$search}%")
@@ -46,6 +47,8 @@ class UserManagementController extends Controller
                 'email' => $user->email,
                 'peran' => $user->peran->value,
                 'peranLabel' => $user->peran->label(),
+                'unitPendidikanId' => $user->unit_pendidikan_id,
+                'unitPendidikanNama' => $user->unitPendidikan?->nama ?? 'Seluruh unit',
                 'statusAktif' => $user->status_aktif,
                 'statusLabel' => $user->status_aktif ? 'Aktif' : 'Nonaktif',
                 'googleTerhubung' => filled($user->google_id),
@@ -72,6 +75,7 @@ class UserManagementController extends Controller
                     ['value' => 'aktif', 'label' => 'Aktif'],
                     ['value' => 'nonaktif', 'label' => 'Nonaktif'],
                 ],
+                'unitPendidikan' => UnitPendidikan::query()->where('status_aktif', true)->orderBy('urutan')->get(['id', 'nama']),
             ],
             'storeUrl' => route('admin.users.store', absolute: false),
         ]);
@@ -87,6 +91,7 @@ class UserManagementController extends Controller
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'peran' => ['required', Rule::in([PeranUser::AdminSpmb->value])],
+            'unit_pendidikan_id' => ['required', 'integer', 'exists:unit_pendidikan,id'],
         ], [
             'username.regex' => 'Username hanya boleh berisi huruf, angka, titik, strip, dan garis bawah.',
             'username.unique' => 'Username ini sudah digunakan.',
@@ -104,6 +109,7 @@ class UserManagementController extends Controller
         $audit->record('akun.created', $user, [
             'username' => $user->username,
             'peran' => $user->peran->value,
+            'unit_pendidikan_id' => $user->unit_pendidikan_id,
         ], $request);
 
         return back()->with('success', "Akun '{$user->username}' berhasil dibuat.");
@@ -114,8 +120,8 @@ class UserManagementController extends Controller
         $this->pastikanSuperadmin($request);
 
         $data = $request->validate([
-            'action' => ['required', Rule::in(['update_role', 'suspend', 'reactivate'])],
-            'peran' => ['nullable', Rule::enum(PeranUser::class)],
+            'action' => ['required', Rule::in(['update_unit', 'suspend', 'reactivate'])],
+            'unit_pendidikan_id' => ['nullable', 'integer', 'exists:unit_pendidikan,id'],
         ]);
 
         if ($user->is($request->user()) || $user->isSuperadmin()) {
@@ -127,28 +133,28 @@ class UserManagementController extends Controller
         $sebelum = ['peran' => $user->peran->value, 'status_aktif' => $user->status_aktif];
 
         $aksi = match ($data['action']) {
-            'update_role' => $this->ubahPeran($user, $data['peran'] ?? null),
+            'update_unit' => $this->ubahUnit($user, $data['unit_pendidikan_id'] ?? null),
             'suspend' => $this->ubahStatus($user, false),
             'reactivate' => $this->ubahStatus($user, true),
         };
 
         $audit->record($aksi, $user, [
             'sebelum' => $sebelum,
-            'sesudah' => ['peran' => $user->peran->value, 'status_aktif' => $user->status_aktif],
+            'sesudah' => ['peran' => $user->peran->value, 'unit_pendidikan_id' => $user->unit_pendidikan_id, 'status_aktif' => $user->status_aktif],
         ], $request);
 
         return back()->with('success', 'Perubahan akun berhasil disimpan.');
     }
 
-    private function ubahPeran(User $user, ?string $peran): string
+    private function ubahUnit(User $user, ?int $unitPendidikanId): string
     {
-        if (! $user->status_aktif || $peran !== PeranUser::AdminSpmb->value) {
-            throw ValidationException::withMessages(['action' => 'Peran akun tidak dapat diubah.']);
+        if (! $user->status_aktif || ! $unitPendidikanId) {
+            throw ValidationException::withMessages(['unit_pendidikan_id' => 'Pilih unit pendidikan aktif untuk akun admin.']);
         }
 
-        $user->update(['peran' => PeranUser::AdminSpmb]);
+        $user->update(['unit_pendidikan_id' => $unitPendidikanId]);
 
-        return 'akun.role_changed';
+        return 'akun.unit_changed';
     }
 
     private function ubahStatus(User $user, bool $aktif): string

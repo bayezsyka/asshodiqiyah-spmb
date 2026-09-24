@@ -356,14 +356,13 @@
     <table class="header-table">
         <tr>
             <td class="header-logo-cell">
-                <img class="header-logo" src="{{ public_path('assets/lentera-hati/logo-sekolah-lenterahati.png') }}" alt="Logo Lenterahati">
+                <img class="header-logo" src="{{ public_path('assets/asshodiqiyah/logo.webp') }}" alt="Logo Asshodiqiyah">
             </td>
             <td class="header-info-cell">
                 <div class="title-main">FORMULIR PENDAFTARAN</div>
-                <div class="title-school">LENTERAHATI ISLAMIC BOARDING SCHOOL</div>
+                <div class="title-school">PONDOK PESANTREN ASSHODIQIYAH KALIGAWE</div>
                 <div class="title-tags">
-                    #Penitipan Anak #Kelompok Bermain #Taman Kanak-kanak<br>
-                    #Sekolah Dasar #Sekolah Menengah Pertama #Sekolah Menengah Atas &amp; Pesantren
+                    #SD IT #SMP IT #MTs #MA #SMK
                 </div>
             </td>
             <td class="header-box-cell">
@@ -371,20 +370,18 @@
                     <div class="jenjang-title">Jenjang Pendidikan</div>
                     <table class="jenjang-grid">
                         <tr>
-                            <th>TPA</th>
-                            <th>KB</th>
-                            <th>TK</th>
-                            <th>SD</th>
-                            <th>SMP</th>
-                            <th>SMA</th>
+                            <th>SD IT</th>
+                            <th>SMP IT</th>
+                            <th>MTs</th>
+                            <th>MA</th>
+                            <th>SMK</th>
                         </tr>
                         <tr>
-                            <td class="{{ in_array($kodeJenjangAktif, ['TPA', 'PAUD']) ? 'jenjang-active' : '' }}">{!! in_array($kodeJenjangAktif, ['TPA', 'PAUD']) ? '&#10003;' : '&nbsp;' !!}</td>
-                            <td class="{{ $kodeJenjangAktif === 'KB' ? 'jenjang-active' : '' }}">{!! $kodeJenjangAktif === 'KB' ? '&#10003;' : '&nbsp;' !!}</td>
-                            <td class="{{ $kodeJenjangAktif === 'TK' ? 'jenjang-active' : '' }}">{!! $kodeJenjangAktif === 'TK' ? '&#10003;' : '&nbsp;' !!}</td>
-                            <td class="{{ $kodeJenjangAktif === 'SD' ? 'jenjang-active' : '' }}">{!! $kodeJenjangAktif === 'SD' ? '&#10003;' : '&nbsp;' !!}</td>
-                            <td class="{{ $kodeJenjangAktif === 'SMP' ? 'jenjang-active' : '' }}">{!! $kodeJenjangAktif === 'SMP' ? '&#10003;' : '&nbsp;' !!}</td>
-                            <td class="{{ $kodeJenjangAktif === 'SMA' ? 'jenjang-active' : '' }}">{!! $kodeJenjangAktif === 'SMA' ? '&#10003;' : '&nbsp;' !!}</td>
+                            <td class="{{ $kodeJenjangAktif === 'SDIT' ? 'jenjang-active' : '' }}">{!! $kodeJenjangAktif === 'SDIT' ? '&#10003;' : '&nbsp;' !!}</td>
+                            <td class="{{ $kodeJenjangAktif === 'SMPIT' ? 'jenjang-active' : '' }}">{!! $kodeJenjangAktif === 'SMPIT' ? '&#10003;' : '&nbsp;' !!}</td>
+                            <td class="{{ $kodeJenjangAktif === 'MTS' ? 'jenjang-active' : '' }}">{!! $kodeJenjangAktif === 'MTS' ? '&#10003;' : '&nbsp;' !!}</td>
+                            <td class="{{ $kodeJenjangAktif === 'MA' ? 'jenjang-active' : '' }}">{!! $kodeJenjangAktif === 'MA' ? '&#10003;' : '&nbsp;' !!}</td>
+                            <td class="{{ $kodeJenjangAktif === 'SMK' ? 'jenjang-active' : '' }}">{!! $kodeJenjangAktif === 'SMK' ? '&#10003;' : '&nbsp;' !!}</td>
                         </tr>
                     </table>
                     <table class="meta-mini-table">
@@ -611,7 +608,7 @@
 
     <!-- Tanda Tangan -->
     <div style="text-align: right; font-size: 7.2pt; color: #1e293b; margin-top: 6px;">
-        Lombok Barat, {{ ($pendaftaran->created_at ?? now())->isoFormat('D MMMM Y') }}
+        Semarang, {{ ($pendaftaran->created_at ?? now())->isoFormat('D MMMM Y') }}
     </div>
 
     <table class="sig-table">

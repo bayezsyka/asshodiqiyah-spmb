@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
+
 use App\Exports\PendaftaranExport;
 use App\Http\Controllers\Controller;
 use App\Models\JenjangPendaftaran;
@@ -21,11 +23,12 @@ class EksporPpdbController extends Controller
         $filter = $request->only(['status', 'jenjang', 'periode']);
         $audit->record('ekspor.excel', null, $filter, $request);
 
-        return Excel::download(new PendaftaranExport($filter), 'Data Pendaftaran '.now()->format('Ymd His').'.xlsx');
+        return Excel::download(new PendaftaranExport($filter, $request->user()), 'Data Pendaftaran '.now()->format('Ymd His').'.xlsx');
     }
 
     public function pdf(Request $request, Pendaftaran $pendaftaran, AuditLogger $audit, PaketPendaftaranPdfService $paketPdf, NamaArsipPendaftaran $namaArsip)
     {
+        $this->pastikanDalamUnit($request, $pendaftaran);
         $isi = $paketPdf->buat($pendaftaran);
         $audit->record('ekspor.pdf_lengkap', $pendaftaran, [], $request);
 
@@ -42,9 +45,9 @@ class EksporPpdbController extends Controller
             'jenjang' => ['required', 'integer', 'exists:jenjang_pendaftaran,id'],
             'periode' => ['nullable', 'string'],
         ]);
-        $jenjang = JenjangPendaftaran::findOrFail($filter['jenjang']);
+        $jenjang = JenjangPendaftaran::query()->untukPengelola($request->user())->findOrFail($filter['jenjang']);
 
-        if ($jenjang->kelompok !== 'paud' && (blank($filter['periode'] ?? null) || $filter['periode'] === 'tanpa_periode')) {
+        if (blank($filter['periode'] ?? null) || $filter['periode'] === 'tanpa_periode') {
             throw ValidationException::withMessages(['periode' => 'Pilih periode pendaftaran untuk export jenjang ini.']);
         }
 
@@ -52,11 +55,10 @@ class EksporPpdbController extends Controller
             ? PeriodePpdb::find($filter['periode'])
             : null;
 
-        $items = Pendaftaran::query()
+        $items = Pendaftaran::query()->untukPengelola($request->user())
             ->with(['jenjang', 'periode', 'berkas'])
             ->when($filter['status'] ?? null, fn ($query, $nilai) => $query->where('status', $nilai))
             ->where('jenjang_pendaftaran_id', $jenjang->id)
-            ->when($jenjang->kelompok === 'paud', fn ($query) => $query->whereNull('periode_ppdb_id'))
             ->when($periode, fn ($query) => $query->where('periode_ppdb_id', $periode->id))
             ->orderBy('nama_lengkap')
             ->get();
@@ -119,5 +121,10 @@ class EksporPpdbController extends Controller
         $namaDipakai[$nama] = true;
 
         return $nama;
+    }
+
+    private function pastikanDalamUnit(Request $request, Pendaftaran $pendaftaran): void
+    {
+        abort_unless(Pendaftaran::query()->untukPengelola($request->user())->whereKey($pendaftaran->id)->exists(), 403);
     }
 }

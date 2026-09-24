@@ -22,32 +22,24 @@ class KonfigurasiAlurJenjang
      */
     public function konfigurasi(JenjangPendaftaran $jenjang): array
     {
-        $isPaud = $jenjang->kelompok === 'paud';
-
         return [
             'kelompok' => $jenjang->kelompok,
-            'nisn_wajib' => ! $isPaud,
-            'nik_wajib' => $isPaud,
-            'asal_sekolah_wajib' => ! $isPaud,
-            'periode_wajib' => ! $isPaud,
-            'label_identitas_utama' => $isPaud ? 'NIK Calon Peserta' : 'NISN Calon Peserta',
-            'bantuan_identitas' => $isPaud
-                ? 'NIK 16 digit sesuai Kartu Keluarga (KK).'
-                : 'NISN 10 digit resmi dari Dapodik / Kemendikbud.',
+            'nisn_wajib' => true,
+            'nik_wajib' => false,
+            'asal_sekolah_wajib' => true,
+            'periode_wajib' => true,
+            'label_identitas_utama' => 'NISN Calon Peserta',
+            'bantuan_identitas' => 'NISN 10 digit resmi dari Dapodik / Kemendikbud.',
         ];
     }
 
     /**
      * Menentukan periode SPMB yang tepat untuk pendaftaran.
-     * Untuk jenjang PAUD, pendaftaran dibuka sepanjang tahun tanpa periode.
+     * Seluruh unit Asshodiqiyah mengikuti periode SPMB aktif.
      * Untuk jenjang formal, pendaftaran dikaitkan ke periode aktif.
      */
     public function tentukanPeriode(?JenjangPendaftaran $jenjang = null, ?int $periodeIdInput = null): ?int
     {
-        if ($jenjang?->kelompok === 'paud') {
-            return null;
-        }
-
         if ($periodeIdInput !== null) {
             $periode = PeriodePpdb::query()->where('status_aktif', true)->find($periodeIdInput);
             if ($periode) {
@@ -67,22 +59,13 @@ class KonfigurasiAlurJenjang
      */
     public function ambilPersyaratan(JenjangPendaftaran $jenjang, ?int $periodeId = null): Collection
     {
-        $isPaud = $jenjang->kelompok === 'paud';
-
         return PersyaratanPendaftaran::query()
             ->where('status_aktif', true)
             ->where(function ($query) use ($jenjang) {
                 $query->whereNull('jenjang_pendaftaran_id')
                     ->orWhere('jenjang_pendaftaran_id', $jenjang->id);
             })
-            ->where(function ($query) use ($isPaud, $periodeId) {
-                if ($isPaud) {
-                    $query->whereNull('periode_ppdb_id');
-                } else {
-                    $query->whereNull('periode_ppdb_id')
-                        ->orWhere('periode_ppdb_id', $periodeId);
-                }
-            })
+            ->where(fn ($query) => $query->whereNull('periode_ppdb_id')->orWhere('periode_ppdb_id', $periodeId))
             ->orderBy('urutan')
             ->get();
     }

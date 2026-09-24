@@ -5,24 +5,24 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title inertia>{{ $seo['title'] ?? config('app.name', 'SPMB Lenterahati IBS') }}</title>
-    <meta name="description" content="{{ $seo['description'] ?? 'Portal resmi SPMB Lenterahati Islamic Boarding School.' }}">
+    <title inertia>{{ $seo['title'] ?? config('app.name', 'SPMB Asshodiqiyah') }}</title>
+    <meta name="description" content="{{ $seo['description'] ?? 'Portal resmi penerimaan santri dan siswa baru Pondok Pesantren Asshodiqiyah Kaligawe.' }}">
     <meta name="robots" content="{{ $seo['robots'] ?? 'noindex, nofollow' }}">
     <link rel="canonical" href="{{ $seo['canonical'] ?? url()->current() }}">
     @if (! empty($seo['ogImage']))
         <meta property="og:image" content="{{ $seo['ogImage'] }}">
-        <meta property="og:image:alt" content="Kampus Lenterahati Islamic Boarding School">
+        <meta property="og:image:alt" content="Pondok Pesantren Asshodiqiyah Kaligawe">
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:image" content="{{ $seo['ogImage'] }}">
     @endif
     <meta property="og:locale" content="id_ID">
-    <meta property="og:site_name" content="SPMB Lenterahati IBS">
+    <meta property="og:site_name" content="SPMB Asshodiqiyah">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="{{ $seo['title'] ?? config('app.name', 'SPMB Lenterahati IBS') }}">
-    <meta property="og:description" content="{{ $seo['description'] ?? 'Portal resmi SPMB Lenterahati Islamic Boarding School.' }}">
+    <meta property="og:title" content="{{ $seo['title'] ?? config('app.name', 'SPMB Asshodiqiyah') }}">
+    <meta property="og:description" content="{{ $seo['description'] ?? 'Portal resmi penerimaan santri dan siswa baru Pondok Pesantren Asshodiqiyah Kaligawe.' }}">
     <meta property="og:url" content="{{ $seo['canonical'] ?? url()->current() }}">
-    <meta name="twitter:title" content="{{ $seo['title'] ?? config('app.name', 'SPMB Lenterahati IBS') }}">
-    <meta name="twitter:description" content="{{ $seo['description'] ?? 'Portal resmi SPMB Lenterahati Islamic Boarding School.' }}">
+    <meta name="twitter:title" content="{{ $seo['title'] ?? config('app.name', 'SPMB Asshodiqiyah') }}">
+    <meta name="twitter:description" content="{{ $seo['description'] ?? 'Portal resmi penerimaan santri dan siswa baru Pondok Pesantren Asshodiqiyah Kaligawe.' }}">
     @if (! empty($seo['jsonLd']))
         <script type="application/ld+json">@json($seo['jsonLd'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)</script>
     @endif

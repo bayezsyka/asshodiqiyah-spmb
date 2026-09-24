@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->id(); $table->foreignId('periode_ppdb_id')->nullable()->constrained('periode_ppdb')->nullOnDelete(); $table->foreignId('jenjang_pendaftaran_id')->constrained('jenjang_pendaftaran')->restrictOnDelete();
             $table->string('status', 32)->default('diajukan')->index();
 
-            // Data calon siswa - mengikuti formulir resmi Lenterahati IBS.
+            // Data calon siswa untuk formulir pendaftaran SPMB.
             $table->string('nama_lengkap'); $table->string('nama_panggilan', 100);
             $table->string('tempat_lahir'); $table->date('tanggal_lahir'); $table->string('jenis_kelamin', 16); $table->string('agama_calon', 64); $table->string('suku_bangsa_calon', 100)->nullable(); $table->string('kewarganegaraan', 32)->default('WNI');
             $table->unsignedTinyInteger('anak_ke')->nullable(); $table->unsignedTinyInteger('jumlah_saudara_kandung')->nullable(); $table->unsignedTinyInteger('jumlah_saudara_tiri')->nullable(); $table->unsignedTinyInteger('jumlah_saudara_angkat')->nullable(); $table->unsignedTinyInteger('jumlah_bersaudara')->nullable();

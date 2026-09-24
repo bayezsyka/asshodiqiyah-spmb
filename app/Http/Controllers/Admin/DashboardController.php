@@ -26,7 +26,7 @@ class DashboardController extends Controller
         $defaultPeriode = $periodeAktif ? (string) $periodeAktif->id : 'all';
         $periodeTerpilih = $request->query('periode', $defaultPeriode);
 
-        $q = Pendaftaran::query();
+        $q = Pendaftaran::query()->untukPengelola($request->user());
 
         if ($periodeTerpilih !== 'all' && $periodeTerpilih !== '') {
             if ($periodeTerpilih === 'tanpa_periode') {
@@ -55,7 +55,7 @@ class DashboardController extends Controller
             'periodeList' => $periodeList,
             'periodeTerpilih' => $periodeTerpilih,
             'periodeAktif' => $periodeAktif,
-            'totalTanpaPeriode' => Pendaftaran::query()->whereNull('periode_ppdb_id')->count(),
+            'totalTanpaPeriode' => Pendaftaran::query()->untukPengelola($request->user())->whereNull('periode_ppdb_id')->count(),
         ]);
     }
 }

@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 export default function PublicLayout({ title, children }: { title?: string } & PropsWithChildren) {
   const { url, props } = usePage();
   const seoTitle = (props.seo as { title?: string } | undefined)?.title;
-  const spmbInfoUrl = (props.spmbInfoUrl as string) || (props.ppdbInfoUrl as string) || 'https://lenterahatiibs.com/spmb';
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -28,7 +27,7 @@ export default function PublicLayout({ title, children }: { title?: string } & P
 
   return (
     <>
-      <Head title={seoTitle ?? (title ? `${title} · Portal SPMB Lenterahati` : 'Portal SPMB Lenterahati IBS')} />
+      <Head title={seoTitle ?? (title ? `${title} · SPMB Asshodiqiyah` : 'SPMB Asshodiqiyah')} />
       <div className="public-portal flex min-h-screen flex-col bg-slate-100/70 font-sans text-ink">
         <a href="#main-content" className="skip-link">Lewati ke konten</a>
 
@@ -36,13 +35,10 @@ export default function PublicLayout({ title, children }: { title?: string } & P
         <header className={cn('fixed inset-x-0 top-0 z-50 border-b transition-all duration-300', scrolled ? 'border-slate-200 bg-white/95 shadow-sm backdrop-blur-md' : 'border-slate-200/80 bg-white/90 backdrop-blur-md')}>
           <Container className="flex h-16 items-center justify-between gap-4">
             {/* Brand Logo */}
-            <Link href="/" className="flex items-center gap-2.5 pr-2 transition hover:opacity-90" aria-label="Portal SPMB Lenterahati IBS">
-              <div className="flex items-center gap-1 shrink-0">
-                <BrandLogo jenis="yayasan" className="h-7 w-7 sm:h-8 sm:w-8" />
-                <BrandLogo jenis="sekolah" className="h-7 w-7 sm:h-8 sm:w-8" />
-              </div>
+            <Link href="/" className="flex items-center gap-2.5 pr-2 transition hover:opacity-90" aria-label="Portal SPMB Asshodiqiyah">
+              <BrandLogo className="h-9 w-9 sm:h-10 sm:w-10" />
               <div>
-                <p className="public-display text-lg font-bold leading-tight text-ink">Lenterahati IBS</p>
+                <p className="public-display text-lg font-bold leading-tight text-ink">Asshodiqiyah</p>
                 <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-primary">Portal SPMB Online</p>
               </div>
             </Link>
@@ -77,29 +73,27 @@ export default function PublicLayout({ title, children }: { title?: string } & P
 
             {/* Right Action Links */}
             <div className="hidden items-center gap-3 lg:flex">
-              <a
-                href={spmbInfoUrl}
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                href="/#informasi"
                 className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
               >
                 Informasi SPMB
                 <ArrowUpRight className="h-3.5 w-3.5 text-slate-400" />
-              </a>
+              </Link>
               {authUser ? (
                 <Link
                   href="/admin"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-bold text-white transition hover:bg-slate-800"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-xs font-bold text-white transition hover:bg-primary-dark"
                 >
-                  <ShieldCheck className="h-3.5 w-3.5 text-yellow-400" />
+                  <ShieldCheck className="h-3.5 w-3.5 text-decorative" />
                   Dashboard Admin
                 </Link>
               ) : (
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-bold text-white transition hover:bg-slate-800"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-xs font-bold text-white transition hover:bg-primary-dark"
                 >
-                  <ShieldCheck className="h-3.5 w-3.5 text-yellow-400" />
+                  <ShieldCheck className="h-3.5 w-3.5 text-decorative" />
                   Admin Panitia
                 </Link>
               )}
@@ -134,30 +128,28 @@ export default function PublicLayout({ title, children }: { title?: string } & P
                 <ClipboardCheck className="h-4 w-4" />
                 Cek Status Pendaftaran
               </Link>
-              <a
-                href={spmbInfoUrl}
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                href="/#informasi"
                 className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
               >
                 <span>Informasi Lengkap SPMB (Website Utama)</span>
                 <ArrowUpRight className="h-4 w-4 text-slate-400" />
-              </a>
+              </Link>
             </nav>
             {authUser ? (
               <Link
                 href="/admin"
-                className="mt-3 flex min-h-11 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-bold text-white"
+                className="mt-3 flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-white"
               >
-                <ShieldCheck className="h-4 w-4 text-yellow-400" />
+                <ShieldCheck className="h-4 w-4 text-decorative" />
                 Buka Dashboard Admin
               </Link>
             ) : (
               <Link
                 href="/login"
-                className="mt-3 flex min-h-11 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-bold text-white"
+                className="mt-3 flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-white"
               >
-                <ShieldCheck className="h-4 w-4 text-yellow-400" />
+                <ShieldCheck className="h-4 w-4 text-decorative" />
                 Login Admin SPMB
               </Link>
             )}
@@ -174,19 +166,16 @@ export default function PublicLayout({ title, children }: { title?: string } & P
           <Container className="py-8">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <BrandLogo jenis="yayasan" className="h-8 w-8" />
-                  <BrandLogo jenis="sekolah" className="h-8 w-8" />
-                </div>
+                <BrandLogo className="h-10 w-10 shrink-0" />
                 <div>
-                  <p className="font-bold text-ink">Lenterahati Islamic Boarding School</p>
-                  <p className="text-xs text-slate-500">Portal Pendaftaran &amp; Status Seleksi Santri Baru</p>
+                  <p className="font-bold text-ink">Pondok Pesantren Asshodiqiyah Kaligawe</p>
+                  <p className="text-xs text-slate-500">Portal Penerimaan Santri &amp; Siswa Baru</p>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-4 text-xs font-semibold">
-                <a href={spmbInfoUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                <Link href="/#informasi" className="text-primary hover:underline">
                   Info SPMB
-                </a>
+                </Link>
                 <span className="text-slate-300">•</span>
                 <Link href="/cek-status" className="hover:text-ink">
                   Cek Status
@@ -198,8 +187,8 @@ export default function PublicLayout({ title, children }: { title?: string } & P
               </div>
             </div>
             <div className="mt-6 border-t border-slate-100 pt-6 text-center text-xs text-slate-400 sm:flex sm:items-center sm:justify-between sm:text-left">
-              <p>© {new Date().getFullYear()} Lenterahati IBS. Seluruh data pendaftaran dilindungi dan dikelola panitia.</p>
-              <p className="mt-2 sm:mt-0">Lombok Barat, Nusa Tenggara Barat</p>
+              <p>© {new Date().getFullYear()} Yayasan Asshodiqiyah Semarang. Seluruh data pendaftaran dilindungi dan dikelola panitia.</p>
+              <p className="mt-2 sm:mt-0">Kaligawe, Kota Semarang</p>
             </div>
           </Container>
         </footer>

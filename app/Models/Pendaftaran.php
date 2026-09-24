@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\StatusPendaftaran;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Pendaftaran extends Model
 {
     protected $table = 'pendaftaran';
+
     protected $fillable = [
         'periode_ppdb_id', 'jenjang_pendaftaran_id', 'status', 'nisn', 'nik', 'nama_ibu_pencarian',
         'nama_lengkap', 'nama_panggilan', 'tempat_lahir', 'tanggal_lahir', 'jenis_kelamin', 'agama_calon', 'suku_bangsa_calon', 'kewarganegaraan',
@@ -19,13 +21,41 @@ class Pendaftaran extends Model
         'nama_ibu', 'tempat_lahir_ibu', 'tanggal_lahir_ibu', 'agama_ibu', 'suku_bangsa_ibu', 'pendidikan_ibu', 'pekerjaan_ibu', 'alamat_ibu', 'nomor_telepon_ibu', 'penghasilan_ibu',
         'catatan_publik_terakhir', 'submitted_at', 'verified_at', 'accepted_at', 're_registered_at',
     ];
+
     protected function casts(): array
     {
         return ['status' => StatusPendaftaran::class, 'tanggal_lahir' => 'date', 'tanggal_lahir_ayah' => 'date', 'tanggal_lahir_ibu' => 'date', 'submitted_at' => 'datetime', 'verified_at' => 'datetime', 'accepted_at' => 'datetime', 're_registered_at' => 'datetime'];
     }
-    public function jenjang(): BelongsTo { return $this->belongsTo(JenjangPendaftaran::class, 'jenjang_pendaftaran_id'); }
-    public function periode(): BelongsTo { return $this->belongsTo(PeriodePpdb::class, 'periode_ppdb_id'); }
-    public function berkas(): HasMany { return $this->hasMany(BerkasPendaftaran::class); }
-    public function riwayatStatus(): HasMany { return $this->hasMany(RiwayatStatusPendaftaran::class)->latest(); }
-    public function catatan(): HasMany { return $this->hasMany(CatatanPendaftaran::class)->latest(); }
+
+    public function jenjang(): BelongsTo
+    {
+        return $this->belongsTo(JenjangPendaftaran::class, 'jenjang_pendaftaran_id');
+    }
+
+    public function periode(): BelongsTo
+    {
+        return $this->belongsTo(PeriodePpdb::class, 'periode_ppdb_id');
+    }
+
+    public function berkas(): HasMany
+    {
+        return $this->hasMany(BerkasPendaftaran::class);
+    }
+
+    public function riwayatStatus(): HasMany
+    {
+        return $this->hasMany(RiwayatStatusPendaftaran::class)->latest();
+    }
+
+    public function catatan(): HasMany
+    {
+        return $this->hasMany(CatatanPendaftaran::class)->latest();
+    }
+
+    public function scopeUntukPengelola(Builder $query, User $user): Builder
+    {
+        return $user->isSuperadmin()
+            ? $query
+            : $query->whereHas('jenjang', fn (Builder $jenjang) => $jenjang->where('unit_pendidikan_id', $user->unit_pendidikan_id));
+    }
 }

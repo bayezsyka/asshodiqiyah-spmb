@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'username', 'email', 'password', 'google_id', 'peran', 'status_aktif', 'last_login_at'])]
+#[Fillable(['name', 'username', 'email', 'password', 'google_id', 'peran', 'unit_pendidikan_id', 'status_aktif', 'last_login_at'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -33,11 +33,23 @@ class User extends Authenticatable
         ];
     }
 
-    public function isSuperadmin(): bool { return $this->peran === PeranUser::Superadmin; }
-    public function isAktif(): bool { return $this->status_aktif; }
+    public function isSuperadmin(): bool
+    {
+        return $this->peran === PeranUser::Superadmin;
+    }
+
+    public function isAktif(): bool
+    {
+        return $this->status_aktif;
+    }
 
     public function isPengelolaSpmb(): bool
     {
-        return $this->isAktif() && in_array($this->peran, [PeranUser::Superadmin, PeranUser::AdminSpmb], true);
+        return $this->isAktif() && ($this->isSuperadmin() || ($this->peran === PeranUser::AdminSpmb && $this->unit_pendidikan_id !== null));
+    }
+
+    public function unitPendidikan()
+    {
+        return $this->belongsTo(UnitPendidikan::class);
     }
 }

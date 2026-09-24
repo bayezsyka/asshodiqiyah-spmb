@@ -5,15 +5,15 @@
 
 @theme {
     --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
-    --color-primary: #0077c8;
-    --color-primary-dark: #00558f;
-    --color-deep: #063c63;
-    --color-ink: #152238;
-    --color-success: #00a651;
-    --color-danger: #e60012;
-    --color-decorative: #ffd200;
-    --color-app: #f4f7fa;
-    --color-background-app: #f4f7fa;
+    --color-primary: #153d2e;
+    --color-primary-dark: #0d2d21;
+    --color-deep: #071e16;
+    --color-ink: #17211c;
+    --color-success: #2f674d;
+    --color-danger: #b42318;
+    --color-decorative: #c39755;
+    --color-app: #f4f0e6;
+    --color-background-app: #f4f0e6;
 }
 
 @layer base {
@@ -25,7 +25,7 @@
 }
 
 @layer components {
-    .public-portal { --public-paper: #f3f6f4; --public-cream: #fffdf6; --public-blue: #0077c8; --public-blue-deep: #00558f; --public-blue-950: #063c63; --public-green: #00a651; --public-yellow: #ffd200; --public-ink: #14283b; --public-body: #5d6d78; background: var(--public-paper); color: var(--public-ink); font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif; font-size: 1rem; letter-spacing: -0.012em; -webkit-font-smoothing: antialiased; }
+    .public-portal { --public-paper: #f4f0e6; --public-cream: #fffdf8; --public-blue: #153d2e; --public-blue-deep: #153d2e; --public-blue-950: #071e16; --public-green: #2f674d; --public-yellow: #c39755; --public-ink: #17211c; --public-body: #5f6a62; background: var(--public-paper); color: var(--public-ink); font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif; font-size: 1rem; letter-spacing: -0.012em; -webkit-font-smoothing: antialiased; }
     .public-display { font-family: 'Lora', Georgia, serif; font-weight: 500; letter-spacing: -0.04em; line-height: 1.08; text-wrap: balance; }
     .public-page-hero { background: linear-gradient(135deg, var(--public-blue-deep) 0%, var(--public-blue-950) 76%, #073653 100%); }
     .home-hero { background: linear-gradient(135deg, var(--public-blue-deep) 0%, var(--public-blue-950) 72%, #073653 100%); }
@@ -48,7 +48,7 @@
     .spmb-table th { @apply border-b border-slate-200 px-4 py-3 text-xs font-bold uppercase tracking-wide text-slate-500; }
     .spmb-table td { @apply border-b border-slate-100 px-4 py-3.5 align-middle text-slate-700; }
 
-    .admin-portal { --admin-page: #f4f7fa; --admin-surface: #fff; --admin-line: #dbe4ec; --admin-line-soft: #e8eef3; --admin-muted: #607285; --admin-heading: #152238; --admin-primary: #0077c8; --admin-primary-dark: #00558f; background: var(--admin-page); color: var(--admin-heading); font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif; font-size: .9375rem; letter-spacing: -.01em; }
+    .admin-portal { --admin-page: #f4f0e6; --admin-surface: #fffdf8; --admin-line: #dcd8ce; --admin-line-soft: #ebe6da; --admin-muted: #657069; --admin-heading: #17211c; --admin-primary: #153d2e; --admin-primary-dark: #0d2d21; background: var(--admin-page); color: var(--admin-heading); font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif; font-size: .9375rem; letter-spacing: -.01em; }
     .admin-page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; }
     .admin-page-title { color: var(--admin-heading); font-size: clamp(1.65rem, 2.5vw, 2.15rem); font-weight: 700; letter-spacing: -.035em; line-height: 1.15; }
     .admin-page-description { max-width: 48rem; margin-top: .45rem; color: var(--admin-muted); font-size: .9375rem; line-height: 1.55; }

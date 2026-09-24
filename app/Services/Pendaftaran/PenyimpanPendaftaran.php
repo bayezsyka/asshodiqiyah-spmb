@@ -24,29 +24,20 @@ class PenyimpanPendaftaran
     public function simpan(array $data): Pendaftaran
     {
         $jenjang = JenjangPendaftaran::query()->whereKey($data['jenjang_pendaftaran_id'])->where('status_aktif', true)->firstOrFail();
-        $isPaud = $jenjang->kelompok === 'paud';
+        $periode = isset($data['periode_ppdb_id'])
+            ? PeriodePpdb::query()->whereKey($data['periode_ppdb_id'])->where('status_aktif', true)->first()
+            : PeriodePpdb::query()->where('status_aktif', true)->orderByDesc('mulai_pada')->first();
 
-        $periode = null;
-        if (! $isPaud) {
-            $periode = isset($data['periode_ppdb_id'])
-                ? PeriodePpdb::query()->whereKey($data['periode_ppdb_id'])->where('status_aktif', true)->first()
-                : PeriodePpdb::query()->where('status_aktif', true)->orderByDesc('mulai_pada')->first();
-
-            if ($periode === null) {
-                throw ValidationException::withMessages(['periode_ppdb_id' => 'Periode pendaftaran aktif belum tersedia untuk jenjang ini.']);
-            }
+        if ($periode === null) {
+            throw ValidationException::withMessages(['periode_ppdb_id' => 'Periode pendaftaran aktif belum tersedia untuk unit ini.']);
         }
 
         $persyaratan = PersyaratanPendaftaran::query()
             ->where('status_aktif', true)
-            ->where(function ($query) use ($jenjang) { $query->whereNull('jenjang_pendaftaran_id')->orWhere('jenjang_pendaftaran_id', $jenjang->id); })
-            ->where(function ($query) use ($isPaud, $periode) {
-                if ($isPaud) {
-                    $query->whereNull('periode_ppdb_id');
-                } else {
-                    $query->whereNull('periode_ppdb_id')->orWhere('periode_ppdb_id', $periode?->id);
-                }
+            ->where(function ($query) use ($jenjang) {
+                $query->whereNull('jenjang_pendaftaran_id')->orWhere('jenjang_pendaftaran_id', $jenjang->id);
             })
+            ->where(fn ($query) => $query->whereNull('periode_ppdb_id')->orWhere('periode_ppdb_id', $periode->id))
             ->orderBy('urutan')
             ->get()
             ->sortBy(fn (PersyaratanPendaftaran $persyaratan) => ($persyaratan->jenjang_pendaftaran_id !== null ? 1 : 0) + ($persyaratan->periode_ppdb_id !== null ? 1 : 0))
@@ -70,7 +61,7 @@ class PenyimpanPendaftaran
             throw ValidationException::withMessages($berkasKurang);
         }
 
-        $periodeFinalId = $isPaud ? null : $periode?->id;
+        $periodeFinalId = $periode->id;
 
         return DB::transaction(function () use ($data, $jenjang, $periodeFinalId, $persyaratan): Pendaftaran {
             $pendaftaran = Pendaftaran::create([
@@ -85,12 +76,15 @@ class PenyimpanPendaftaran
             ]);
 
             foreach (($data['berkas'] ?? []) as $kode => $file) {
-                if (! $file instanceof UploadedFile) continue;
+                if (! $file instanceof UploadedFile) {
+                    continue;
+                }
                 $aturan = $persyaratan->get($kode);
                 $this->unggahBerkas->simpan($pendaftaran, $kode, $aturan->nama, $file, $aturan->id);
             }
 
             $pendaftaran->riwayatStatus()->create(['status_sesudahnya' => StatusPendaftaran::Diajukan]);
+
             return $pendaftaran;
         });
     }

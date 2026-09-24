@@ -20,6 +20,7 @@ type UserItem = {
   email: string;
   peran: string;
   peranLabel: string;
+  unitPendidikanNama: string;
   statusAktif: boolean;
   statusLabel: string;
   googleTerhubung: boolean;
@@ -106,7 +107,7 @@ function AccountActions({ user }: { user: UserItem }) {
   );
 }
 
-function CreateUserModal({ open, onClose, storeUrl }: { open: boolean; onClose: () => void; storeUrl: string }) {
+function CreateUserModal({ open, onClose, storeUrl, units }: { open: boolean; onClose: () => void; storeUrl: string; units: Option[] }) {
   const form = useForm({
     name: '',
     username: '',
@@ -114,6 +115,7 @@ function CreateUserModal({ open, onClose, storeUrl }: { open: boolean; onClose: 
     password: '',
     password_confirmation: '',
     peran: 'admin_spmb',
+    unit_pendidikan_id: '',
   });
 
   if (!open) return null;
@@ -137,7 +139,7 @@ function CreateUserModal({ open, onClose, storeUrl }: { open: boolean; onClose: 
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-50 text-primary"><UserPlus className="h-5 w-5" /></span>
             <div>
               <h2 id="create-user-title" className="font-bold text-ink">Tambah akun pengguna</h2>
-              <p className="text-xs text-slate-500">Buat akses baru untuk pengelola SPMB.</p>
+              <p className="text-xs text-slate-500">Setiap akun dikhususkan untuk satu unit pendidikan.</p>
             </div>
           </div>
           <button type="button" onClick={onClose} className="grid h-9 w-9 place-items-center rounded-lg text-slate-400 hover:bg-slate-100" aria-label="Tutup"><X className="h-4 w-4" /></button>
@@ -146,7 +148,8 @@ function CreateUserModal({ open, onClose, storeUrl }: { open: boolean; onClose: 
         <form onSubmit={submit} className="mt-5 grid gap-4 sm:grid-cols-2">
           <label className="sm:col-span-2"><span className="spmb-label">Nama lengkap</span><input required className="spmb-input" value={form.data.name} onChange={(event) => form.setData('name', event.target.value)} />{form.errors.name && <p className="spmb-error">{form.errors.name}</p>}</label>
           <label><span className="spmb-label">Username</span><input required autoComplete="off" className="spmb-input" value={form.data.username} onChange={(event) => form.setData('username', event.target.value)} />{form.errors.username && <p className="spmb-error">{form.errors.username}</p>}</label>
-          <label><span className="spmb-label">Peran</span><input disabled className="spmb-input" value="Admin SPMB" /></label>
+          <label><span className="spmb-label">Unit pendidikan</span><select required className="spmb-input" value={form.data.unit_pendidikan_id} onChange={(event) => form.setData('unit_pendidikan_id', event.target.value)}><option value="">Pilih unit</option>{units.map((unit) => <option key={unit.value} value={unit.value}>{unit.label}</option>)}</select>{form.errors.unit_pendidikan_id && <p className="spmb-error">{form.errors.unit_pendidikan_id}</p>}</label>
+          <label><span className="spmb-label">Peran</span><input disabled className="spmb-input" value="Admin Unit SPMB" /></label>
           <label className="sm:col-span-2"><span className="spmb-label">Email</span><input required type="email" className="spmb-input" value={form.data.email} onChange={(event) => form.setData('email', event.target.value)} />{form.errors.email && <p className="spmb-error">{form.errors.email}</p>}</label>
           <label><span className="spmb-label">Password</span><input required type="password" minLength={8} className="spmb-input" value={form.data.password} onChange={(event) => form.setData('password', event.target.value)} />{form.errors.password && <p className="spmb-error">{form.errors.password}</p>}</label>
           <label><span className="spmb-label">Konfirmasi password</span><input required type="password" minLength={8} className="spmb-input" value={form.data.password_confirmation} onChange={(event) => form.setData('password_confirmation', event.target.value)} /></label>
@@ -168,7 +171,7 @@ export default function UsersIndex({
 }: {
   users: Paginated<UserItem>;
   filters: { search: string; status: string; peran: string };
-  options: { peran: Option[]; status: Option[] };
+  options: { peran: Option[]; status: Option[]; unitPendidikan: { id: number; nama: string }[] };
   storeUrl: string;
 }) {
   const [search, setSearch] = useState(filters.search);
@@ -182,7 +185,7 @@ export default function UsersIndex({
   };
 
   return (
-    <AdminLayout title="Kelola Pengguna" description="Buat akun baru dan atur akses pengelola SPMB.">
+    <AdminLayout title="Kelola Pengguna" description="Superadmin membuat dan mengatur akun admin untuk setiap unit pendidikan.">
       <div className="mb-5 flex flex-col gap-3 xl:flex-row xl:items-center">
         <form onSubmit={applyFilters} className="spmb-panel grid flex-1 gap-2.5 p-3 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1fr)_160px_170px_auto]">
           <label className="relative sm:col-span-2 lg:col-span-1"><span className="sr-only">Cari pengguna</span><Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /><input type="search" className="spmb-input pl-10" placeholder="Cari nama, username, atau email…" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
@@ -195,11 +198,11 @@ export default function UsersIndex({
 
       <section className="spmb-panel overflow-hidden">
         <div className="divide-y divide-slate-100 lg:hidden">
-          {users.data.map((user) => <article key={user.id} className="space-y-3 p-4"><div className="flex items-start gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-blue-50 font-bold text-primary">{user.name.slice(0, 1).toUpperCase()}</span><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h2 className="font-bold text-ink">{user.name}</h2>{user.isCurrentUser && <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-primary">Anda</span>}</div><p className="text-xs font-semibold text-primary">@{user.username}</p><p className="truncate text-xs text-slate-500">{user.email}</p></div><span className={`spmb-badge ${user.statusAktif ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{user.statusLabel}</span></div><dl className="grid grid-cols-2 gap-2 rounded-xl bg-slate-50 p-3 text-xs"><div><dt className="text-slate-400">Peran</dt><dd className="font-bold">{user.peranLabel}</dd></div><div><dt className="text-slate-400">Google</dt><dd className="font-bold">{user.googleTerhubung ? 'Terhubung' : 'Belum'}</dd></div><div className="col-span-2"><dt className="text-slate-400">Login terakhir</dt><dd className="font-medium">{formatDate(user.lastLoginAt)}</dd></div></dl><AccountActions user={user} /></article>)}
+          {users.data.map((user) => <article key={user.id} className="space-y-3 p-4"><div className="flex items-start gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-blue-50 font-bold text-primary">{user.name.slice(0, 1).toUpperCase()}</span><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h2 className="font-bold text-ink">{user.name}</h2>{user.isCurrentUser && <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-primary">Anda</span>}</div><p className="text-xs font-semibold text-primary">@{user.username}</p><p className="truncate text-xs text-slate-500">{user.email}</p></div><span className={`spmb-badge ${user.statusAktif ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{user.statusLabel}</span></div><dl className="grid grid-cols-2 gap-2 rounded-xl bg-slate-50 p-3 text-xs"><div><dt className="text-slate-400">Peran</dt><dd className="font-bold">{user.peranLabel}</dd></div><div><dt className="text-slate-400">Unit</dt><dd className="font-bold">{user.unitPendidikanNama}</dd></div><div className="col-span-2"><dt className="text-slate-400">Login terakhir</dt><dd className="font-medium">{formatDate(user.lastLoginAt)}</dd></div></dl><AccountActions user={user} /></article>)}
         </div>
 
         <div className="hidden overflow-x-auto lg:block">
-          <table className="spmb-table min-w-[900px]"><thead className="bg-slate-50/80"><tr><th>Pengguna</th><th>Peran</th><th>Status</th><th>Google</th><th>Login terakhir</th><th className="text-right">Tindakan</th></tr></thead><tbody>{users.data.map((user) => <tr key={user.id}><td><div className="flex items-center gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-blue-50 font-bold text-primary">{user.name.slice(0, 1).toUpperCase()}</span><div><div className="flex items-center gap-2"><p className="font-bold text-ink">{user.name}</p>{user.isCurrentUser && <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-primary">Anda</span>}</div><p className="text-xs font-semibold text-primary">@{user.username}</p><p className="text-xs text-slate-500">{user.email}</p></div></div></td><td><span className="spmb-badge bg-indigo-50 text-indigo-700">{user.peranLabel}</span></td><td><span className={`spmb-badge ${user.statusAktif ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{user.statusLabel}</span></td><td className="text-xs font-medium">{user.googleTerhubung ? 'Terhubung' : 'Belum terhubung'}</td><td className="whitespace-nowrap text-xs">{formatDate(user.lastLoginAt)}</td><td><div className="flex justify-end"><AccountActions user={user} /></div></td></tr>)}</tbody></table>
+          <table className="spmb-table min-w-[900px]"><thead className="bg-slate-50/80"><tr><th>Pengguna</th><th>Peran</th><th>Unit</th><th>Status</th><th>Login terakhir</th><th className="text-right">Tindakan</th></tr></thead><tbody>{users.data.map((user) => <tr key={user.id}><td><div className="flex items-center gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-blue-50 font-bold text-primary">{user.name.slice(0, 1).toUpperCase()}</span><div><div className="flex items-center gap-2"><p className="font-bold text-ink">{user.name}</p>{user.isCurrentUser && <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-primary">Anda</span>}</div><p className="text-xs font-semibold text-primary">@{user.username}</p><p className="text-xs text-slate-500">{user.email}</p></div></div></td><td><span className="spmb-badge bg-indigo-50 text-indigo-700">{user.peranLabel}</span></td><td className="text-xs font-bold">{user.unitPendidikanNama}</td><td><span className={`spmb-badge ${user.statusAktif ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{user.statusLabel}</span></td><td className="whitespace-nowrap text-xs">{formatDate(user.lastLoginAt)}</td><td><div className="flex justify-end"><AccountActions user={user} /></div></td></tr>)}</tbody></table>
         </div>
 
         {users.data.length === 0 && <div className="px-5 py-16 text-center"><Users className="mx-auto h-10 w-10 text-slate-300" /><p className="mt-3 font-bold text-ink">Pengguna tidak ditemukan</p><p className="mt-1 text-xs text-slate-500">Ubah pencarian atau filter yang digunakan.</p></div>}
@@ -207,7 +210,7 @@ export default function UsersIndex({
         {users.last_page > 1 && <nav className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-5 py-4"><p className="text-xs font-medium text-slate-500">Menampilkan {users.from}–{users.to} dari {users.total} pengguna</p><div className="flex flex-wrap gap-1.5">{users.links.map((link, index) => link.url ? <Link key={`${link.label}-${index}`} href={link.url} preserveScroll className={`inline-flex h-9 min-w-9 items-center justify-center rounded-xl border px-3 text-xs font-bold ${link.active ? 'border-primary bg-primary text-white' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'}`}>{paginationLabel(link.label)}</Link> : <span key={`${link.label}-${index}`} className="inline-flex h-9 min-w-9 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 px-3 text-xs text-slate-300">{paginationLabel(link.label)}</span>)}</div></nav>}
       </section>
 
-      <CreateUserModal open={modalOpen} onClose={() => setModalOpen(false)} storeUrl={storeUrl} />
+      <CreateUserModal open={modalOpen} onClose={() => setModalOpen(false)} storeUrl={storeUrl} units={options.unitPendidikan.map((unit) => ({ value: String(unit.id), label: unit.nama }))} />
     </AdminLayout>
   );
 }

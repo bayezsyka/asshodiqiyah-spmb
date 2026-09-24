@@ -11,7 +11,7 @@ enum PeranUser: string
     {
         return match ($this) {
             self::Superadmin => 'Superadmin',
-            self::AdminSpmb => 'Admin SPMB',
+            self::AdminSpmb => 'Admin Unit SPMB',
         };
     }
 }

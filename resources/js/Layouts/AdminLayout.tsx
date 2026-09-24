@@ -71,12 +71,12 @@ export default function AdminLayout({
             icon: ClipboardList,
             active: isActive('/admin/pendaftaran'),
           },
-          {
+          ...(page.props.auth.user?.role === 'superadmin' ? [{
             label: 'Kelola Periode',
             href: '/admin/periode',
             icon: CalendarRange,
             active: isActive('/admin/periode'),
-          },
+          }] : []),
         ],
       },
       {
@@ -103,7 +103,7 @@ export default function AdminLayout({
   return (
     <>
       <Head title={title} />
-      <div className="admin-portal min-h-screen bg-[#f4f7fa] text-ink antialiased">
+      <div className="admin-portal min-h-screen bg-app text-ink antialiased">
         {/* Sidebar Terpadu */}
         <Sidebar
           open={sidebarOpen}

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BerkasPendaftaran;
+use App\Models\Pendaftaran;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -12,6 +13,7 @@ class BerkasPendaftaranController extends Controller
 {
     public function download(Request $request, BerkasPendaftaran $berkas, AuditLogger $audit)
     {
+        $this->pastikanDalamUnit($request, $berkas);
         $lokasi = $berkas->lokasiPenyimpanan();
         abort_unless($lokasi !== null && Storage::disk('local')->exists($lokasi), 404);
 
@@ -29,6 +31,7 @@ class BerkasPendaftaranController extends Controller
 
     public function verifikasi(Request $request, BerkasPendaftaran $berkas, AuditLogger $audit)
     {
+        $this->pastikanDalamUnit($request, $berkas);
         $data = $request->validate([
             'status_verifikasi' => ['required', 'in:valid,perlu_perbaikan'],
             'catatan_verifikasi' => ['nullable', 'string', 'max:1500'],
@@ -38,5 +41,10 @@ class BerkasPendaftaranController extends Controller
         $audit->record('berkas.verified', $berkas, $data, $request);
 
         return back()->with('success', 'Status berkas diperbarui.');
+    }
+
+    private function pastikanDalamUnit(Request $request, BerkasPendaftaran $berkas): void
+    {
+        abort_unless(Pendaftaran::query()->untukPengelola($request->user())->whereKey($berkas->pendaftaran_id)->exists(), 403);
     }
 }

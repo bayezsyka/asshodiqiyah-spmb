@@ -4,6 +4,7 @@ namespace App\Http\Requests\Pendaftaran;
 
 use App\Models\JenjangPendaftaran;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Validator;
 
@@ -79,17 +80,13 @@ class SimpanPendaftaranRequest extends FormRequest
         $validator->after(function (Validator $validator): void {
             $jenjang = JenjangPendaftaran::find($this->integer('jenjang_pendaftaran_id'));
 
-            if ($jenjang?->kelompok !== 'paud' && blank($this->input('nisn'))) {
+            if ($jenjang && blank($this->input('nisn'))) {
                 $validator->errors()->add('nisn', 'NISN wajib diisi untuk jenjang SD, SMP, dan SMA.');
-            }
-
-            if ($jenjang?->kelompok === 'paud' && blank($this->input('nik'))) {
-                $validator->errors()->add('nik', 'NIK wajib diisi untuk jenjang PAUD.');
             }
 
             // ASVS V5.2: Pas foto wajib berupa file gambar
             foreach ((array) $this->file('berkas') as $kode => $file) {
-                if ($file instanceof \Illuminate\Http\UploadedFile && in_array($kode, ['pas_foto_calon', 'foto_ayah', 'foto_ibu'], true)) {
+                if ($file instanceof UploadedFile && in_array($kode, ['pas_foto_calon', 'foto_ayah', 'foto_ibu'], true)) {
                     $mime = (string) $file->getMimeType();
                     $ext = strtolower((string) $file->getClientOriginalExtension());
                     if ($mime === 'application/pdf' || $ext === 'pdf') {
@@ -107,7 +104,7 @@ class SimpanPendaftaranRequest extends FormRequest
         $this->merge([
             'nisn' => $this->angka($this->input('nisn')),
             'nik' => $this->angka($this->input('nik')),
-            'periode_ppdb_id' => $jenjang?->kelompok === 'paud' ? null : ($this->input('periode_ppdb_id') ?: null),
+            'periode_ppdb_id' => $this->input('periode_ppdb_id') ?: null,
         ]);
     }
 
